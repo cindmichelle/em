@@ -123,6 +123,7 @@ const TreeNode = ({
         className={css({
           position: 'absolute',
           transition: 'left {durations.layoutNodeAnimation} ease-out,top {durations.layoutNodeAnimation} ease-out',
+          border: '1px solid red',
         })}
         style={{
           // Cannot use transform because it creates a new stacking context, which causes later siblings' DropChild to be covered by previous siblings'.

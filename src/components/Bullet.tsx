@@ -293,8 +293,8 @@ const BulletLeaf = ({
       data-bullet='leaf'
       ry={radius}
       rx={radius}
-      cy='298'
-      cx='297'
+      cy='300'
+      cx='300'
       style={{
         // allow .gray to define fill when missing
         // allow .graypulse to define fill when pending
@@ -562,6 +562,7 @@ const Bullet = ({
           // required to make the distance between bullet and thought scale properly at all font sizes.
           left: bulletSvgLeftPosition,
           marginBottom: glyphMarginBottom,
+          border: '1px solid blue',
         }}
         ref={svgElement}
       >
