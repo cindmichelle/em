@@ -580,6 +580,7 @@ const Bullet = ({
           height: lineHeight,
           width: lineHeight,
           marginLeft: bulletSvgMarginLeft,
+          backgroundColor: 'green',
           // required to make the distance between bullet and thought scale properly at all font sizes.
           left: bulletSvgLeftPosition,
           marginBottom: glyphMarginBottom,

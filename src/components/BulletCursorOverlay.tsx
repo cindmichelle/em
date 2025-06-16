@@ -103,11 +103,6 @@ const BulletCursorOverlay = ({
   const translateY = y - bulletSvgMarginBottom + contextBreadcrumbYPadding
 
   const overlaySvgMarginBottom = isOSXSafari ? glyphMarginBottom - bulletSvgMarginBottom : undefined
-  const top = translateY
-  const remainder = glyphMarginBottom - bulletSvgMarginBottom
-  console.log(
-    `BulletCursorOverlay: translateY=${translateY}, top=${top}, remainder= ${glyphMarginBottom} - ${Math.floor(glyphMarginBottom)} =${remainder}`,
-  )
 
   return (
     <div
@@ -118,10 +113,11 @@ const BulletCursorOverlay = ({
         position: 'absolute',
         // transform: `translateY(${translateY}px) translateX(${translateX}px)`,
         // transition: `transform 80ms ease-in-out`,
-        willChange: !isOSXSafari ? 'transform' : undefined,
 
         left: `${translateX}px`,
         top: `${translateY}px`,
+        // marginBottom: remainder,
+        // transform: `translateY(${-remainder}px)`,
         transition: `left 80ms ease-in-out, top 80ms ease-in-out`,
       }}
     >
@@ -132,6 +128,7 @@ const BulletCursorOverlay = ({
           // By setting "will-change: transform;", we hint to the browser that the transform property will change in the future,
           // allowing the browser to optimize the animation.
           // verticalAlign: 'baseline',
+          willChange: !isOSXSafari ? 'transform' : undefined,
           ...(isCursorActive
             ? {
                 fillOpacity: 1,
