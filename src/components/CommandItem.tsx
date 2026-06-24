@@ -194,6 +194,8 @@ const CommandItem: FC<{
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: 32,
+                // Row height in GestureMenu is derived from GESTURE_MENU_COMMAND_ROW_HEIGHT in constants.ts.
+                // If this height changes, update that constant too.
                 height: 32,
               },
         )}

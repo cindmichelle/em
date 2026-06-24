@@ -511,6 +511,14 @@ export const TOOLBAR_PRESS_ANIMATION_DURATION = 80
 export const GESTURE_GLOW_BLUR = 10
 export const GESTURE_GLOW_COLOR: ColorToken = 'highlight'
 
+// Gesture menu blur height formula constants.
+// GESTURE_MENU_COMMAND_ROW_HEIGHT must match the rendered height of a CommandItem row in GestureMenu
+// (icon cell height 32px + paddingBlock 2×0.4em at default fontSize 18px ≈ 46px, rounded to 48).
+// If any of these change, update GestureMenu.tsx's height formula and vice versa.
+export const GESTURE_MENU_COMMAND_ROW_HEIGHT = 48
+export const GESTURE_MENU_TOP_PADDING = 20
+export const GESTURE_MENU_BOTTOM_PADDING = 20
+
 // define the grouping and ordering of commands
 export const COMMAND_GROUPS: {
   title: string

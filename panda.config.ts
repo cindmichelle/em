@@ -459,6 +459,7 @@ export default defineConfig({
             'cloneDroppedThought',
             'hoverArrow',
             'gestureTrace',
+            'gestureMenuBlur',
             'hamburgerMenu',
             'sidebar',
             'modal',

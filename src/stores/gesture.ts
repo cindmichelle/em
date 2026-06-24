@@ -12,6 +12,8 @@ const gestureStore = reactMinistore({
   gesture: '',
   /** Animation lifecycle state for the gesture menu. */
   gestureMenuAnimationState: 'hidden' as GestureMenuAnimationState,
+  /** Computed height of the gesture menu content, used to size the ProgressiveBlur layer. */
+  gestureMenuHeight: 0,
   /** The possible commands that can be executed from the current gesture as a starting sequence. Always includes cancel and help. */
   possibleCommands: [cancelShortcut, openHelpCommand] as Command[],
 })
@@ -37,6 +39,11 @@ export const onGestureMenuExited = () => {
     gestureMenuAnimationState: 'hidden',
     gesture: '',
   })
+}
+
+/** Sets the computed height of the gesture menu for the ProgressiveBlur layer. Pass 0 on unmount. */
+export const setGestureMenuHeight = (height: number) => {
+  gestureStore.update({ gestureMenuHeight: height })
 }
 
 /** Updates the gesture during tracking. */

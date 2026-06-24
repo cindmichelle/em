@@ -5,10 +5,16 @@ import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
 import { gestureString } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
+import {
+  GESTURE_MENU_BOTTOM_PADDING,
+  GESTURE_MENU_COMMAND_ROW_HEIGHT,
+  GESTURE_MENU_TOP_PADDING,
+} from '../constants'
 import useFilteredCommands from '../hooks/useFilteredCommands'
 import gestureStore, {
   onGestureMenuEntered,
   onGestureMenuExited,
+  setGestureMenuHeight,
   startGestureMenuEnter,
   startGestureMenuExit,
 } from '../stores/gesture'
@@ -89,22 +95,28 @@ const GestureMenu: FC<{
   )
 }
 
-/** Renders a blur effect overlay for the gesture menu. */
+/** Renders a dark gradient overlay for the gesture menu. Positioned fixed below gestureTrace so the gesture trace
+ * remains sharp and visible on top. backdrop-filter cannot be used here because Chrome's compositor groups all
+ * position:fixed elements into the same paint layer, causing backdrop-filter to capture the trace regardless
+ * of z-index. A dark background with gradient mask achieves a similar darkening effect without blurring the trace. */
 function ProgressiveBlur() {
   const animationState = gestureStore.useSelector(state => state.gestureMenuAnimationState)
+  const gestureMenuHeight = gestureStore.useSelector(state => state.gestureMenuHeight)
 
   return (
     <div
       className={css({
         pointerEvents: 'none',
-        position: 'absolute',
-        backdropFilter: 'blur(5px)',
+        position: 'fixed',
+        background: '{colors.black}',
         mask: 'linear-gradient(180deg, {colors.black} 0%, {colors.bgOverlay80} 80%, {colors.bgTransparent} 100%)',
-        width: '100%',
         top: 0,
-        height: '100%',
+        left: 0,
+        right: 0,
+        zIndex: 'gestureMenuBlur',
       })}
       style={{
+        height: gestureMenuHeight,
         // Use ease-out on enter so the blur appears immediately, and easeInSlow on exit so it lingers before fading.
         transition: `opacity ${token('durations.fast')} ${animationState === 'exiting' ? token('easings.easeInSlow') : 'ease-out'}`,
         opacity: animationState === 'visible' ? 1 : 0,
@@ -180,6 +192,14 @@ const GestureMenuWithTransition: FC = () => {
     sortActiveCommandsFirst: true,
   })
 
+  const computedHeight =
+    GESTURE_MENU_TOP_PADDING + commands.length * GESTURE_MENU_COMMAND_ROW_HEIGHT + GESTURE_MENU_BOTTOM_PADDING
+
+  useEffect(() => {
+    setGestureMenuHeight(computedHeight)
+    return () => setGestureMenuHeight(0)
+  }, [computedHeight])
+
   const [isGlowBackgroundLoaded, setIsGlowBackgroundLoaded] = useState(false)
 
   // Sync Redux showGestureMenu to gestureStore animation state
@@ -219,42 +239,44 @@ const GestureMenuWithTransition: FC = () => {
   if (animationState === 'hidden') return null
 
   return (
-    <PopupBase background='transparent' ref={popupRef} fullScreen>
-      <div
-        data-testid='popup-value'
-        className={css({
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'start',
-          alignItems: 'center',
-          width: '100%',
-          position: 'absolute',
-          top: 0,
-        })}
-      >
-        <ProgressiveBlur />
-        {/* Apply the fade transition only to the glow, overlay, and gesture menu contents 
-        to prevent the progressive blur from appearing only after the animation ends. */}
-        <FadeTransition nodeRef={overlayRef} in={fadeIn} type='fast' unmountOnExit onExited={onGestureMenuExited}>
-          <div
-            ref={overlayRef}
-            className={css({
-              position: 'relative',
-              // prevent mix-blend-mode and backdrop-filter from affecting each other
-              isolation: 'isolate',
-              width: '100%',
-              paddingBottom: '200px',
-              maxHeight: '100dvh',
-            })}
-          >
-            <Overlay />
-            {isGlowBackgroundLoaded && <Glow />}
-            <GestureMenu commands={commands} />
-          </div>
-        </FadeTransition>
-      </div>
-    </PopupBase>
+    <>
+      <ProgressiveBlur />
+      <PopupBase background='transparent' ref={popupRef} fullScreen>
+        <div
+          data-testid='popup-value'
+          className={css({
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'start',
+            alignItems: 'center',
+            width: '100%',
+            position: 'absolute',
+            top: 0,
+          })}
+        >
+          {/* Apply the fade transition only to the glow, overlay, and gesture menu contents
+          to prevent the progressive blur from appearing only after the animation ends. */}
+          <FadeTransition nodeRef={overlayRef} in={fadeIn} type='fast' unmountOnExit onExited={onGestureMenuExited}>
+            <div
+              ref={overlayRef}
+              className={css({
+                position: 'relative',
+                // prevent mix-blend-mode and backdrop-filter from affecting each other
+                isolation: 'isolate',
+                width: '100%',
+                paddingBottom: '200px',
+                maxHeight: '100dvh',
+              })}
+            >
+              <Overlay />
+              {isGlowBackgroundLoaded && <Glow />}
+              <GestureMenu commands={commands} />
+            </div>
+          </FadeTransition>
+        </div>
+      </PopupBase>
+    </>
   )
 }
 
