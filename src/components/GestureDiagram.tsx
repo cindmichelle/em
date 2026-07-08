@@ -443,9 +443,7 @@ const GestureDiagram = ({
 
       return (
         <>
-          {highlight! > 0 && (
-            <path d={joinRdldSegments(RDLD_SEGMENTS.slice(0, highlight))} stroke={activeColor} {...commonPathProps} />
-          )}
+          <path d={joinRdldSegments(RDLD_SEGMENTS.slice(0, highlight))} stroke={activeColor} {...commonPathProps} />
           <path d={joinRdldSegments(RDLD_SEGMENTS.slice(highlight))} stroke={inactiveColor} {...commonPathProps} />
         </>
       )
