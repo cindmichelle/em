@@ -5,7 +5,6 @@ import { toolbarPointerEventsRecipe } from '../../styled-system/recipes'
 import { token } from '../../styled-system/tokens'
 import CommandId from '../@types/CommandId'
 import DragCommandZone from '../@types/DragCommandZone'
-import Icon from '../@types/IconType'
 import State from '../@types/State'
 import { isTouch } from '../browser'
 import { commandById, formatKeyboardShortcut } from '../commands'
@@ -85,8 +84,7 @@ const ToolbarButton: FC<ToolbarButtonProps> = ({
   const longPressTapDown = longPress.props[isTouch ? 'onTouchStart' : 'onMouseDown']
   const longPressTouchMove = longPress.props.onTouchMove
 
-  // TODO: type svg correctly
-  const SVG = svg as React.FC<Icon>
+  const SVG = svg
 
   // Get the direction if the command is 'toggleSort'
   const direction = useSelector((state: State) => {

@@ -78,7 +78,7 @@ interface Command {
   }
 
   // an icon that represents the command in the Toolbar
-  svg: (icon: IconType) => React.ReactNode
+  svg: React.FC<IconType>
 
   /** Multicursor support. If 'ignore', the command will be executed as if there were no multicursors. When true, the command will be executed for each cursor. Optional object for more control. */
   multicursor:
