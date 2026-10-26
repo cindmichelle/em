@@ -58,6 +58,8 @@ interface GestureDiagramBaseProps {
   chevronApexAngle?: number
   /** Chevron half-span as a multiple of the rendered stroke width. Default 2.2. */
   chevronSize?: number
+  /** Inset triangle half-width as a multiple of the rendered stroke width. Default 1.3. */
+  triangleSize?: number
   /** Stroke color for highlighted directions. Default: token('colors.vividHighlight'). */
   highlightColor?: string
 }
@@ -109,6 +111,7 @@ const GestureDiagram = ({
   cornerRadius = 0,
   chevronApexAngle = 80,
   chevronSize = 2.2,
+  triangleSize = 1.3,
   highlightColor,
   preserveAspectRatio,
 }: GestureDiagramProps) => {
@@ -124,6 +127,11 @@ const GestureDiagram = ({
   arrowSize = arrowSize ? +arrowSize : strokeWidth * 5
   reversalOffset = reversalOffset ? +reversalOffset : size * 0.3
 
+  // Only the solid renderer paints an inset triangle. Elsewhere 'filled-inset' falls back to the filled marker.
+  const insetTriangle = arrowhead === 'filled-inset' && !gradient && !useGradient && !rounded
+  const resolvedArrowhead = arrowhead === 'filled-inset' && !insetTriangle ? 'filled' : arrowhead
+  const triangleHalfWidth = strokeWidth * 1.5 * triangleSize
+
   const geometry = useMemo(
     () =>
       path === null
@@ -137,6 +145,8 @@ const GestureDiagram = ({
             reversalOffset: reversalOffset!,
             rounded,
             size,
+            // A base slightly wider than the triangle is long matches the design's squat arrowhead.
+            triangle: insetTriangle ? { halfWidth: triangleHalfWidth, length: triangleHalfWidth * 1.7 } : undefined,
           }),
     [
       arrowhead,
@@ -149,6 +159,8 @@ const GestureDiagram = ({
       rounded,
       gradient,
       strokeWidth,
+      insetTriangle,
+      triangleHalfWidth,
     ],
   )
 
@@ -202,11 +214,12 @@ const GestureDiagram = ({
         viewBox ??
         getGestureViewBox(geometry!, {
           arrowSize: arrowSize!,
-          arrowhead,
+          arrowhead: resolvedArrowhead,
           strokeWidth,
           size,
           chevronSize,
           chevronApexAngle,
+          triangleHalfWidth,
         })
       }
     >
@@ -218,7 +231,7 @@ const GestureDiagram = ({
           highlightColor={highlightColor}
           highlighted={highlight != null && highlight >= path.length}
           instanceId={instanceId}
-          kind={geometry!.chevron ? 'none' : arrowhead}
+          kind={geometry!.chevron || geometry!.triangle ? 'none' : resolvedArrowhead}
           rounded={rounded}
           strokeWidth={strokeWidth}
         />
@@ -226,7 +239,7 @@ const GestureDiagram = ({
 
       {gradient ? (
         <ContinuousGradientGestureRenderer
-          arrowhead={arrowhead}
+          arrowhead={resolvedArrowhead}
           dropShadow={dropShadow}
           geometry={geometry!}
           gradient={gradient}
@@ -237,7 +250,7 @@ const GestureDiagram = ({
         />
       ) : useGradient ? (
         <SegmentedGradientGestureRenderer
-          arrowhead={arrowhead}
+          arrowhead={resolvedArrowhead}
           color={color}
           dropShadow={dropShadow}
           geometry={geometry!}
@@ -247,7 +260,7 @@ const GestureDiagram = ({
         />
       ) : (
         <SolidGestureRenderer
-          arrowhead={arrowhead}
+          arrowhead={resolvedArrowhead}
           color={color}
           dropShadow={dropShadow}
           geometry={geometry!}

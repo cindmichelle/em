@@ -12,6 +12,8 @@ interface GestureGeometry {
   segments: readonly GestureSegment[]
   /** Wide chevron points, or null when the arrowhead uses an SVG marker. */
   chevron: readonly [GesturePoint, GesturePoint, GesturePoint] | null
+  /** Filled triangle points as base corner, tip, base corner, or null when there is no inset triangle. */
+  triangle: readonly [GesturePoint, GesturePoint, GesturePoint] | null
 }
 
 export default GestureGeometry

@@ -222,6 +222,33 @@ describe('geometry-based framing', () => {
   })
 })
 
+describe('inset triangle arrowhead', () => {
+  const props = { path: 'rd' as const, size: 100, arrowhead: 'filled-inset' as const, useGradient: false as const }
+
+  it('paints a solid triangle in place of the marker', () => {
+    const markup = render({ ...props, color: 'dim', highlightColor: 'bright' })
+
+    expect(markup).toContain('<polygon points="')
+    expect(markup).toContain('fill="dim"')
+    expect(markup).not.toContain('marker-end')
+  })
+
+  it('keeps the triangle dim until the whole gesture is traced', () => {
+    const partial = render({ ...props, color: 'dim', highlightColor: 'bright', highlight: 1 })
+    const complete = render({ ...props, color: 'dim', highlightColor: 'bright', highlight: 2 })
+
+    expect(partial).toMatch(/<polygon points="[^"]+" fill="dim"/)
+    expect(complete).toMatch(/<polygon points="[^"]+" fill="bright"/)
+  })
+
+  it('falls back to the filled marker in gradient renderers', () => {
+    const markup = render({ ...props, useGradient: true })
+
+    expect(markup).not.toContain('<polygon')
+    expect(markup).toContain('marker-end')
+  })
+})
+
 describe('automatic viewBox', () => {
   it('includes geometry-derived framing in static markup', () => {
     const props = { arrowhead: 'none' as const, strokeWidth: 2, useGradient: false as const }

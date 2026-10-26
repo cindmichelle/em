@@ -49,3 +49,28 @@ it('applies corner softening in the authored coordinate space', () => {
     gestureIndex: 0,
   })
 })
+
+it('ends an inset triangle on the gesture end and stops the shaft at its base', () => {
+  const geometry = getGestureGeometry('r', { size: 100, reversalOffset: 30, triangle: { halfWidth: 5, length: 8 } })
+
+  expect(geometry.triangle).toEqual([
+    { x: 92, y: 5 },
+    { x: 100, y: 0 },
+    { x: 92, y: -5 },
+  ])
+  expect(geometry.segments).toEqual([{ kind: 'line', from: { x: 0, y: 0 }, to: { x: 92, y: 0 }, gestureIndex: 0 }])
+})
+
+it('collapses a final line shorter than the inset triangle instead of reversing it', () => {
+  const geometry = getGestureGeometry('r', { size: 10, reversalOffset: 3, triangle: { halfWidth: 5, length: 20 } })
+
+  expect(geometry.triangle![1]).toEqual({ x: 10, y: 0 })
+  expect(geometry.segments[0].to).toEqual({ x: 0, y: 0 })
+})
+
+it('omits the inset triangle from the question mark', () => {
+  const geometry = getGestureGeometry('rdld', { size: 50, reversalOffset: 15, triangle: { halfWidth: 5, length: 8 } })
+
+  expect(geometry.triangle).toBeNull()
+  expect(geometry.segments).toEqual(getGestureGeometry('rdld', { size: 50, reversalOffset: 15 }).segments)
+})

@@ -8,6 +8,7 @@ const geometry: GestureGeometry = {
   extendedPath: 'r',
   segments: [{ kind: 'line', from: { x: -5, y: 2 }, to: { x: 45, y: 2 }, gestureIndex: 0 }],
   chevron: null,
+  triangle: null,
 }
 
 it('reserves a square frame for conventional markers', () => {
@@ -20,6 +21,18 @@ it('includes the actual stroke radius when no arrowhead is requested', () => {
   expect(getGestureViewBox(geometry, { arrowSize: 10, arrowhead: 'none', strokeWidth: 2, size: 50 })).toBe(
     '-6.5 -24.5 53 53',
   )
+})
+
+it('pads an inset triangle by half its sideways overhang plus the stroke radius', () => {
+  expect(
+    getGestureViewBox(geometry, {
+      arrowSize: 10,
+      arrowhead: 'filled-inset',
+      strokeWidth: 2,
+      size: 50,
+      triangleHalfWidth: 4,
+    }),
+  ).toBe('-8.5 -26.5 57 57')
 })
 
 it('uses bounds to center each shape without changing its scale', () => {
