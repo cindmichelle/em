@@ -87,7 +87,7 @@ const GestureMenuItem: FC<{
           path={command.id === 'cancel' ? null : gestureString(command)}
           highlight={gestureHighlight}
           arrowhead={command.id === 'cancel' ? 'none' : 'filled'}
-          arrowSize={12}
+          arrowSize={22}
           glow={false}
           useGradient={false}
           color={token('colors.dim')}
