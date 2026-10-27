@@ -12,6 +12,8 @@ const getGestureViewBox = (
     size,
     chevronSize = 2.2,
     chevronApexAngle = 80,
+    glow = true,
+    rounded,
   }: {
     /** Length of the conventional SVG marker. */
     arrowSize: number
@@ -25,11 +27,22 @@ const getGestureViewBox = (
     chevronSize?: number
     /** Interior angle at the chevron apex, in degrees. */
     chevronApexAngle?: number
+    /** Whether the diagram paints a drop-shadow glow. */
+    glow?: boolean
+    /** Whether the gesture uses the legacy rounded-arc topology. */
+    rounded?: boolean
   },
 ): `${number} ${number} ${number} ${number}` => {
   const strokeRadius = (strokeWidth * 1.5) / 2
-  // Retain the conventional-marker allowance. Arrowhead-free diagrams need only stroke padding.
-  const markerPadding = arrowhead === 'none' ? strokeRadius : arrowSize + strokeWidth * 4
+  // Retain the conventional-marker allowance for glowing diagrams, whose drop shadow needs room.
+  // Without a glow, a filled marker centered on the endpoint reaches half its size forward and sideways.
+  // A rounded gesture's marker starts at the endpoint, so it reaches its full length forward.
+  const markerPadding =
+    arrowhead === 'none'
+      ? strokeRadius
+      : arrowhead === 'filled' && !glow
+        ? Math.max(rounded ? arrowSize : arrowSize / 2, strokeRadius)
+        : arrowSize + strokeWidth * 4
   const halfSpan = strokeWidth * 1.5 * chevronSize
   // getChevron places each leg half the depth behind the centerline endpoint.
   const halfDepth = halfSpan / (2 * Math.max(Math.tan((chevronApexAngle * Math.PI) / 360), 0.01))

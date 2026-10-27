@@ -16,6 +16,12 @@ it('reserves a square frame for conventional markers', () => {
   )
 })
 
+it('reserves only half the marker size for a filled marker without a glow', () => {
+  expect(
+    getGestureViewBox(geometry, { arrowSize: 10, arrowhead: 'filled', strokeWidth: 2, size: 50, glow: false }),
+  ).toBe('-10 -28 60 60')
+})
+
 it('includes the actual stroke radius when no arrowhead is requested', () => {
   expect(getGestureViewBox(geometry, { arrowSize: 10, arrowhead: 'none', strokeWidth: 2, size: 50 })).toBe(
     '-6.5 -24.5 53 53',
